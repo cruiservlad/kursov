@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
  	<body class="skin-blue">
     <header class="header">
-		<a href="/index" class="logo">Student blog for sfedu</a>
+		<a href="/" class="logo">Student blog for sfedu</a>
 	    <nav class="navbar navbar-static-top" role="navigation">
 		    <div class="navbar-right">
 		        <ul class="nav navbar-nav">
@@ -26,9 +26,9 @@
 					                    <p><%= session.getAttribute("Name_First")%> <%= session.getAttribute("Name_Second")%></p>
 					                </li>
 					                <li class="user-footer">
-					                    <!--<div class="pull-left">
-					                        <a href="#" class="btn btn-default btn-flat">Инфо</a>
-					                    </div>-->
+					                    <div class="pull-left">
+					                        <a href="/index?page=user&user=<%= session.getAttribute("Login") %>" class="btn btn-default btn-flat">Инфо</a>
+					                    </div>
 					                    <div class="pull-right">
 					                        <a href="/index?page=unlogin" class="btn btn-default btn-flat">Выйти</a>
 					                    </div>

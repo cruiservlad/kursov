@@ -20,6 +20,9 @@ public class Post {
 		this.userId = user;
 		this.idx = id;
 	}
+	public Post(int idx) {
+		this.idx = idx;
+	}
 	
 	public void setName(String name) {
 		this.Name = name;

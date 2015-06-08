@@ -18,41 +18,8 @@ import java.util.*;
 @Controller
 public class IndexController {
 
-    /*@RequestMapping(value = "/userList", method = RequestMethod.GET)
-    public String get(Model model) {
-
-        JDBCUtil jdbcUtil = new JDBCUtil();
-        List<User> allUsers = jdbcUtil.getAllUsers();
-        //Get all usersn
-        model.addAttribute("users", allUsers);
-        return "users";
-    }
-
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
-    public String getUser(Model model, @RequestParam(value = "userId", required = false) final String userId) {
-        User u = new User();
-        if (userId != null) {
-            JDBCUtil jdbcUtil = new JDBCUtil();
-            List<User> allUsers = jdbcUtil.getUser(userId);
-            if (!org.springframework.util.CollectionUtils.isEmpty(allUsers))
-                u = allUsers.get(0);
-        }
-        model.addAttribute("user", u);
-        return "user";
-    }
-
-    @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    String save(final HttpServletRequest request,
-                final HttpServletResponse response, final @RequestBody User u) {
-        System.out.println(u);
-        return "User Saved!";
-    }*/
-	
-		
 	@RequestMapping(value = "/index", method = RequestMethod.GET)
-	public String getPage(Model model, final HttpServletRequest request, @RequestParam(value = "page", required = false) final String page)
+	public String getPage(Model model, final HttpServletRequest request, @RequestParam(value = "page", required = false) final String page, @RequestParam(value = "user", required = false) final String user, @RequestParam(value = "id_post", required = false) final String idPost)
 	{ 
 		
 		
@@ -70,32 +37,63 @@ public class IndexController {
 		else if("post_create".equals(page)) {
 			model.addAttribute("page_posting",true);
 		}
-		else {
+		else if("user".equals(page)) {
+			model.addAttribute("page_user",true);
+			model.addAttribute("nameShow", user);
 			JDBCUtil jdbcUtil = new JDBCUtil();
-			List<Post> allPost =jdbcUtil.getAllPost();
+			List<User> allUsers = jdbcUtil.getDateProfile(user);
+			User u = new User();
+			u = allUsers.get(0);
+			model.addAttribute("Check_Name_First", u.getFirstName());
+			model.addAttribute("Check_Name_Last", u.getLastName());
+			model.addAttribute("Check_Age", u.getAge());
+			HttpSession session = request.getSession();
+			List<User> allUsersFollower = jdbcUtil.CheckFollower(session.getAttribute("Login").toString(), user);
+			if (!org.springframework.util.CollectionUtils.isEmpty(allUsersFollower)) model.addAttribute("Follower",true); 
+			else  model.addAttribute("Follower",false); 
+		}
+		else if("random_post".equals(page)) {
+			JDBCUtil jdbcUtil = new JDBCUtil();
+			List<Post> allPost = jdbcUtil.getPost();
 			model.addAttribute("posts", allPost);
 		}
+		else {
+			JDBCUtil jdbcUtil = new JDBCUtil();
+			HttpSession session = request.getSession();
+			if(session.getAttribute("Login") != null) {
+				String Login = session.getAttribute("Login").toString();
+				List<Post> allPost =jdbcUtil.getAllPost(true, Login);
+				model.addAttribute("posts", allPost);
+			}
+			else {
+				List<Post> allPost =jdbcUtil.getAllPost(false, null);
+				model.addAttribute("posts", allPost);
+			}
+		}		
+        return "head";
+	}
+	@RequestMapping(value = "/", method = RequestMethod.GET)
+	public String getPage(Model model, final HttpServletRequest request)
+	{ 
 		
-		/*String userId = request.getParameter("MyUserId");	
-		//not authorized
-		if (userId ==null ){
-			
-			
-			return "login";
-		}else {
-			//normal mode for aut users
-		}
 		JDBCUtil jdbcUtil = new JDBCUtil();
-        List<User> allUsers = jdbcUtil.getAllUsers();
-        //Get all usersn
-        model.addAttribute("head", page);
-        model.addAttribute("postList", allUsers );*/
+		HttpSession session = request.getSession();
+		if(session.getAttribute("Login") != null) {
+			String Login = session.getAttribute("Login").toString();
+			List<Post> allPost =jdbcUtil.getAllPost(true, Login);
+			model.addAttribute("posts", allPost);
+		}
+		else {
+			List<Post> allPost =jdbcUtil.getAllPost(false, null);
+			model.addAttribute("posts", allPost);
+		}
 		
         return "head";
 	}
 	
+	
 	@RequestMapping(value = "/index", method = RequestMethod.POST)
-	public String updatePage(Model model, final HttpServletRequest request, @RequestParam(value = "page", required = false) final String page)
+	public String updatePage(Model model, final HttpServletRequest request, @RequestParam(value = "page", required = false) final String page,@RequestParam(value = "postid", required = false) final String postid,@RequestParam(value = "user", required = false) final String user,@RequestParam(value = "method", required = false) final String method)
 	{ 
 		if("auth".equals(page)) {
 			model.addAttribute("page_auth",true);
@@ -163,6 +161,38 @@ public class IndexController {
 	            boolean Good = jdbcUtil.NewPost(request.getParameter("TextNews"), request.getParameter("Header"), request.getParameter("publicNews"), login);
 	            if(Good) model.addAttribute("Good_Post",true);
 	            else { model.addAttribute("page_posting",true);  model.addAttribute("Error_Post",true);}
+			}
+		}
+		
+		if("user".equals(page)) {
+			HttpSession session = request.getSession();
+			if(session.getAttribute("Login") != null) {	
+				JDBCUtil jdbcUtil = new JDBCUtil();
+				List<User> allUsers = jdbcUtil.CheckFollower(session.getAttribute("Login").toString(), user);
+				if (!org.springframework.util.CollectionUtils.isEmpty(allUsers)) {
+					jdbcUtil.setFollower(true, session.getAttribute("Login").toString(), user);
+					model.addAttribute("UnFollower",true);
+				}
+				else {
+					jdbcUtil.setFollower(false, session.getAttribute("Login").toString(), user);
+					model.addAttribute("Follower",true);
+				}
+				model.addAttribute("NameFollower",user);
+			}
+		}
+		
+		if("delete_post".equals(page)) {
+			HttpSession session = request.getSession();
+			if(session.getAttribute("Login") != null) {	
+				JDBCUtil jdbcUtil = new JDBCUtil();
+				List<Post> allPost = jdbcUtil.getNamePost(postid, session.getAttribute("Login").toString());
+				if (!org.springframework.util.CollectionUtils.isEmpty(allPost)) {
+					jdbcUtil.deletePost(session.getAttribute("Login").toString(), postid);
+					model.addAttribute("Ok_Delete",true);
+				}
+				else {
+					model.addAttribute("Error_Delete",true);
+				}
 			}
 		}
 		

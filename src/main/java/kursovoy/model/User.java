@@ -8,6 +8,8 @@ public class User {
     private int age;
     private boolean admin;
     private String Login;
+    private String future;
+    private int yesFollower;
     //private String email;
 
     public User() {
@@ -24,6 +26,22 @@ public class User {
         this.age = age;
         this.admin = userAdmin;
         this.Login = Login;
+    }
+    
+    public User(String firstName, String lastName, int age, String Login, String future) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.Login = Login;
+        this.future = future;
+    }
+    
+    public User(int follower) {
+    	this.yesFollower = follower;
+    }
+    
+    public int getFollower() {
+    	return yesFollower;
     }
 
     public int getUserId() {

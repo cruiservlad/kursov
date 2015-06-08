@@ -71,8 +71,12 @@
 					                    </div>
 				                    </div>
 				                    <div class="form-group">
-				                        <label for="exampleInputAge" class="col-sm-2 control-label">Сколько Вам лет:</label>
-					                    <div class="col-sm-3"><input name="Age" type="number" value="${Age}" min=16 max=99 class="form-control" id="exampleInputAge" placeholder="Возраст" required></div>
+				                    	<div class="form-inline">
+					                        <label for="exampleInputAge" class="col-sm-2 control-label">Сколько Вам лет:</label>
+					                    	<div class="col-sm-4"><input name="Age" type="number" value="${Age}" min=16 max=99 class="form-control" id="exampleInputAge" placeholder="Возраст" required></div>
+					                    	<label for="exampleInputSex" class="col-sm-1 control-label">Пол:</label>
+						                    <div class="col-sm-1"><select name="NameSex" class="form-control" id="exampleInputSex" required><optgroup label="Пол"><option value=1>Мужской</option><option value=2>Женский</option></optgroup></select></div>		                        
+					                    </div>
 				                    </div>
 				                    <div class="form-group">
 					                        <label for="exampleInputGroup" class="col-sm-2 control-label">Название группы:</label>
@@ -82,7 +86,7 @@
 				                        <label for="exampleInputInstitut" class="col-sm-2 control-label">Название института:</label>
 					                    <div class="col-sm-3">
 					                    	<select name="NameUniversity" class="form-control" id="exampleInputInstitut" required>
-					                    		<option disabled></option>
+					                    		
 					                    		<optgroup label="Институты">
 						                        	<option value=1>Институт высоких технологий и пьезотехники</option>
 													<option value=2>Институт радиотехнических систем и управления</option>
